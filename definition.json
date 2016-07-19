@@ -106,13 +106,6 @@
                 "connection": "Native-Connection",
                 "sql": "UPDATE app_todo\n   SET status = {{ body.get(\"\/status\")|prepare }},\n       title = {{ body.get(\"\/title\")|prepare }}\n WHERE id = {{ request.uriFragments.get(\"todo_id\")|prepare }}"
             }
-        },
-        {
-            "name": "Welcome",
-            "class": "Fusio\\Impl\\Action\\StaticResponse",
-            "config": {
-                "response": "{\n    \"message\": \"Congratulations the installation of Fusio was successful\",\n    \"links\": [{\n        \"rel\": \"about\",\n        \"name\": \"http:\/\/fusio-project.org\"\n    }]\n}"
-            }
         }
     ],
     "database": [
