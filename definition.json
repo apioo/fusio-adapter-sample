@@ -178,7 +178,7 @@
                         "GET": {
                             "active": true,
                             "public": true,
-                            "action": "Todo-All",
+                            "action": "Todo-Row",
                             "response": "Todo"
                         },
                         "POST": {
