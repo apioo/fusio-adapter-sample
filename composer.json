@@ -1,6 +1,6 @@
 {
   "name": "fusio/adapter-sample",
-  "description": "Fusio sample adapter",
+  "description": "Sample adapter which provides a basic todo API",
   "homepage": "http://fusio-project.org",
   "keywords": ["fusio-adapter"],
   "license": "MIT",
