@@ -1,0 +1,23 @@
+{
+  "name": "fusio/adapter-sample",
+  "description": "Fusio sample adapter",
+  "homepage": "http://fusio-project.org",
+  "keywords": ["fusio-adapter"],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Christoph Kappestein",
+      "email": "k42b3.x@gmail.com",
+      "homepage": "http://k42b3.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.5",
+    "fusio/engine": "^0.2@dev"
+  },
+  "autoload": {
+    "psr-4": {
+      "Fusio\\Adapter\\Sample": "src/"
+    }
+  }
+}
