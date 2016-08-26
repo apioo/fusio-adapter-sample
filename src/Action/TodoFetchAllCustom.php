@@ -35,8 +35,8 @@ class TodoFetchAllCustom implements ActionInterface
         $connection = $this->connector->getConnection($configuration->get('connection'));
 
         if ($connection instanceof Connection) {
-            $count   = $connection->fetchColumn('SELECT COUNT(*) FROM app_todo');
-            $entries = $connection->fetchAll('SELECT * FROM app_todo ORDER BY insertDate DESC LIMIT 0, 8');
+            $count   = $connection->fetchColumn('SELECT COUNT(*) FROM app_todo WHERE status = 1');
+            $entries = $connection->fetchAll('SELECT * FROM app_todo WHERE status = 1 ORDER BY insertDate DESC LIMIT 0, 8');
 
             return $this->response->build(200, [], [
                 'totalCount' => $count,
