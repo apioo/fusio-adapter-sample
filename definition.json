@@ -114,7 +114,8 @@
             "columns": [
                 {
                     "name": "id",
-                    "type": "integer"
+                    "type": "integer",
+                    "autoincrement": true
                 },
                 {
                     "name": "status",
