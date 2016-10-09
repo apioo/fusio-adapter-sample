@@ -68,7 +68,7 @@
         },
         {
             "name": "Todo-All",
-            "class": "Fusio\\Impl\\Action\\SqlFetchAll",
+            "class": "Fusio\\Adapter\\Sql\\Action\\SqlFetchAll",
             "config": {
                 "connection": "Native-Connection",
                 "propertyName": "entry",
@@ -77,7 +77,7 @@
         },
         {
             "name": "Todo-Insert",
-            "class": "Fusio\\Impl\\Action\\SqlExecute",
+            "class": "Fusio\\Adapter\\Sql\\Action\\SqlExecute",
             "config": {
                 "connection": "Native-Connection",
                 "sql": "INSERT INTO app_todo (status, title, insertDate)\nVALUES (\n  1,\n  {{ body.get(\"\/title\")|prepare }},\n  datetime()\n)"
@@ -85,7 +85,7 @@
         },
         {
             "name": "Todo-Delete",
-            "class": "Fusio\\Impl\\Action\\SqlExecute",
+            "class": "Fusio\\Adapter\\Sql\\Action\\SqlExecute",
             "config": {
                 "connection": "Native-Connection",
                 "sql": "UPDATE app_todo\n   SET status = 0\n WHERE id = {{ request.uriFragments.get(\"todo_id\")|prepare }}"
@@ -93,7 +93,7 @@
         },
         {
             "name": "Todo-Row",
-            "class": "Fusio\\Impl\\Action\\SqlFetchRow",
+            "class": "Fusio\\Adapter\\Sql\\Action\\SqlFetchRow",
             "config": {
                 "connection": "Native-Connection",
                 "sql": "SELECT id, \n       status, \n       title, \n       insertDate \n  FROM app_todo \n WHERE id = {{ request.uriFragment(\"todo_id\")|prepare }}"
@@ -101,7 +101,7 @@
         },
         {
             "name": "Todo-Update",
-            "class": "Fusio\\Impl\\Action\\SqlExecute",
+            "class": "Fusio\\Adapter\\Sql\\Action\\SqlExecute",
             "config": {
                 "connection": "Native-Connection",
                 "sql": "UPDATE app_todo\n   SET status = {{ body.get(\"\/status\")|prepare }},\n       title = {{ body.get(\"\/title\")|prepare }}\n WHERE id = {{ request.uriFragments.get(\"todo_id\")|prepare }}"

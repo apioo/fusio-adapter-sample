@@ -19,20 +19,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Fusio\Adapter\Sample;
+namespace Fusio\Adapter\Sample\Tests;
 
-use Fusio\Engine\AdapterInterface;
+use Fusio\Engine\Test\DefinitionTestCase;
 
 /**
- * Adapter
+ * DefinitionTest
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.gnu.org/licenses/agpl-3.0
  * @link    http://fusio-project.org
  */
-class Adapter implements AdapterInterface
+class DefinitionTest extends DefinitionTestCase
 {
-    public function getDefinition()
+    protected function getDefinition()
     {
         return __DIR__ . '/../definition.json';
     }
