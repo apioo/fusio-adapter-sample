@@ -60,83 +60,40 @@
     ],
     "action": [
         {
-            "name": "Todo-All-Custom",
+            "name": "Todo-Custom",
             "class": "Fusio\\Adapter\\Sample\\Action\\TodoFetchAllCustom",
             "config": {
-                "connection": "Native-Connection"
+                "connection": "${connection}"
             }
         },
         {
-            "name": "Todo-All",
-            "class": "Fusio\\Adapter\\Sql\\Action\\SqlFetchAll",
+            "name": "Todo-SQL-Table",
+            "class": "Fusio\\Adapter\\Sql\\Action\\SqlTable",
             "config": {
-                "connection": "Native-Connection",
-                "propertyName": "entry",
-                "sql": "  SELECT id, \n         status, \n         title, \n         insertDate \n    FROM app_todo \n   WHERE status = 1\nORDER BY insertDate DESC\n   LIMIT 0, 8"
-            }
-        },
-        {
-            "name": "Todo-Insert",
-            "class": "Fusio\\Adapter\\Sql\\Action\\SqlExecute",
-            "config": {
-                "connection": "Native-Connection",
-                "sql": "INSERT INTO app_todo (status, title, insertDate)\nVALUES (\n  1,\n  {{ body.get(\"\/title\")|prepare }},\n  datetime()\n)"
+                "connection": "${connection}",
+                "table": "app_todo"
             }
         },
         {
             "name": "Todo-Delete",
-            "class": "Fusio\\Adapter\\Sql\\Action\\SqlExecute",
+            "class": "Fusio\\Adapter\\V8\\Action\\V8Processor",
             "config": {
-                "connection": "Native-Connection",
-                "sql": "UPDATE app_todo\n   SET status = 0\n WHERE id = {{ request.uriFragments.get(\"todo_id\")|prepare }}"
+                "code": "var connection = connector.get('${connection}');\n\nvar sql = 'UPDATE app_todo SET status = 0 WHERE id = :id';\nconnection.executeUpdate(sql, {\n\tid: request.getUriFragment('todo_id')\n});\n\nresponse.setBody({\n\tsuccess: true\n});\n"
             }
         },
         {
             "name": "Todo-Row",
-            "class": "Fusio\\Adapter\\Sql\\Action\\SqlFetchRow",
+            "class": "Fusio\\Adapter\\V8\\Action\\V8Processor",
             "config": {
-                "connection": "Native-Connection",
-                "sql": "SELECT id, \n       status, \n       title, \n       insertDate \n  FROM app_todo \n WHERE id = {{ request.uriFragment(\"todo_id\")|prepare }}"
+                "code": "var connection = connector.get('${connection}');\n\nvar sql = 'SELECT id, status, title, insertDate FROM app_todo WHERE id = :id';\nvar row = connection.fetchAssoc(sql, {\n\tid: request.getUriFragment('todo_id')\n});\n\nif (row) {\n\tresponse.setBody(row);\n} else {\n\tresponse.setStatusCode(404);\n\tresponse.setBody({\n\t\tsuccess: false, \n\t\tmessage: 'Entry not available'\n\t});\n}\n"
             }
         },
         {
             "name": "Todo-Update",
-            "class": "Fusio\\Adapter\\Sql\\Action\\SqlExecute",
+            "class": "Fusio\\Adapter\\V8\\Action\\V8Processor",
             "config": {
-                "connection": "Native-Connection",
-                "sql": "UPDATE app_todo\n   SET status = {{ body.get(\"\/status\")|prepare }},\n       title = {{ body.get(\"\/title\")|prepare }}\n WHERE id = {{ request.uriFragments.get(\"todo_id\")|prepare }}"
+                "code": "var connection = connector.get('${connection}');\n\nvar sql = 'UPDATE app_todo SET status = :status, title = :title WHERE id = :id';\nvar body = request.getBody();\nvar row = connection.executeUpdate(sql, {\n\tstatus: body.status,\n\ttitle: body.title,\n\tid: request.getUriFragment('todo_id')\n});\n\nresponse.setBody({\n\tsuccess: true\n});\n"
             }
-        }
-    ],
-    "database": [
-        {
-            "name": "app_todo",
-            "columns": [
-                {
-                    "name": "id",
-                    "type": "integer",
-                    "autoincrement": true
-                },
-                {
-                    "name": "status",
-                    "type": "integer"
-                },
-                {
-                    "name": "title",
-                    "type": "string"
-                },
-                {
-                    "name": "insertDate",
-                    "type": "datetime"
-                }
-            ],
-            "indexes": [
-                {
-                    "name": "PRIMARY",
-                    "columns": ["id"],
-                    "primary": true
-                }
-            ]
         }
     ],
     "routes": [
@@ -150,14 +107,14 @@
                         "GET": {
                             "active": true,
                             "public": true,
-                            "action": "Todo-All-Custom",
+                            "action": "Todo-SQL-Table",
                             "response": "Todo-Collection"
                         },
                         "POST": {
                             "active": true,
-                            "action": "Todo-Insert",
+                            "action": "Todo-SQL-Table",
                             "request": "Todo",
-                            "response": "Todo-Message"
+                            "response": "Passthru"
                         },
                         "PUT": {
                             "active": false
