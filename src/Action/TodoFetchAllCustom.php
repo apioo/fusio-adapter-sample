@@ -51,7 +51,7 @@ class TodoFetchAllCustom extends ActionAbstract
                 'entry'      => $entries,
             ]);
         } else {
-            throw new RuntimeException('Given connection must be a DBAL connection');
+            throw new RuntimeException('Given connection must be a SQL connection');
         }
     }
 
