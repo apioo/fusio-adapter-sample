@@ -44,11 +44,11 @@ class TodoFetchAllCustom extends ActionAbstract
 
         if ($connection instanceof Connection) {
             $count   = $connection->fetchColumn('SELECT COUNT(*) FROM app_todo WHERE status = 1');
-            $entries = $connection->fetchAll('SELECT * FROM app_todo WHERE status = 1 ORDER BY insertDate DESC LIMIT 0, 8');
+            $entries = $connection->fetchAll('SELECT * FROM app_todo WHERE status = 1 ORDER BY insertDate DESC LIMIT 16');
 
             return $this->response->build(200, [], [
-                'totalCount' => $count,
-                'entry'      => $entries,
+                'totalResults' => $count,
+                'entry'        => $entries,
             ]);
         } else {
             throw new RuntimeException('Given connection must be a SQL connection');

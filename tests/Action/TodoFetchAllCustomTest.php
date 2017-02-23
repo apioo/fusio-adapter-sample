@@ -49,7 +49,7 @@ class TodoFetchAllCustomTest extends DbTestCase
         $body   = json_encode(Transformer::toArray($response->getBody()), JSON_PRETTY_PRINT);
         $expect = <<<JSON
 {
-    "totalCount": "2",
+    "totalResults": "2",
     "entry": [
         {
             "id": "1",
