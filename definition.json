@@ -98,13 +98,6 @@
             "config": {
                 "code": "\nvar connection = connector.get(\"sqlite\");\n\nvar count = parseInt(connection.fetchColumn(\"SELECT COUNT(*) FROM app_todo\"));\nvar result = connection.fetchAll(\"SELECT * FROM app_todo WHERE status = 1 ORDER BY insertDate DESC LIMIT 16\");\n\nresponse.setBody({\n    totalResults: count,\n    entry: result\n});\n\n"
             }
-        },
-        {
-            "name": "Welcome",
-            "class": "Fusio\\Adapter\\Util\\Action\\UtilStaticResponse",
-            "config": {
-                "response": "{\n    \"message\": \"Congratulations the installation of Fusio was successful\",\n    \"links\": [\n        {\n            \"rel\": \"about\",\n            \"name\": \"http:\\\/\\\/fusio-project.org\"\n        }\n    ]\n}"
-            }
         }
     ],
     "routes": [
@@ -155,25 +148,6 @@
                             "request": "Todo",
                             "response": "Todo-Message",
                             "action": "Todo-Insert"
-                        }
-                    }
-                }
-            ]
-        },
-        {
-            "status": 1,
-            "path": "\/",
-            "controller": "Fusio\\Impl\\Controller\\SchemaApiController",
-            "config": [
-                {
-                    "version": 1,
-                    "status": 4,
-                    "methods": {
-                        "GET": {
-                            "active": true,
-                            "public": true,
-                            "response": "Passthru",
-                            "action": "Welcome"
                         }
                     }
                 }
