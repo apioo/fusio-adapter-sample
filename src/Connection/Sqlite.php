@@ -18,7 +18,7 @@ class Sqlite implements ConnectionInterface
     public function getConnection(ParametersInterface $config)
     {
         return DriverManager::getConnection([
-            'path'   => PSX_PATH_CACHE . '/todo-app.db',
+            'path'   => __DIR__ . '/../../todo-app.db',
             'driver' => 'pdo_sqlite',
         ]);
     }
