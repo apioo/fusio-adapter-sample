@@ -1,6 +1,52 @@
 {
-    "actionClass": ["Fusio\\Adapter\\Sample\\Action\\TodoFetchAllCustom"],
+    "actionClass": [
+        "Fusio\\Adapter\\Sample\\Action\\TodoFetchAllCustom"
+    ],
+    "connectionClass": [
+        "Fusio\\Adapter\\Sample\\Connection\\Sqlite"
+    ],
+    "connection": [
+        {
+            "status": 1,
+            "name": "sqlite",
+            "class": "Fusio\\Adapter\\Sample\\Connection\\Sqlite",
+            "config": {}
+        }
+    ],
     "schema": [
+        {
+            "name": "Todo-Collection",
+            "source": {
+                "type": "object",
+                "title": "collection",
+                "properties": {
+                    "totalCount": {
+                        "type": "integer"
+                    },
+                    "entry": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "schema:\/\/\/Todo"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "name": "Todo-Message",
+            "source": {
+                "type": "object",
+                "title": "message",
+                "properties": {
+                    "success": {
+                        "type": "boolean"
+                    },
+                    "message": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         {
             "name": "Todo",
             "source": {
@@ -22,136 +68,112 @@
                     }
                 }
             }
-        },
-        {
-            "name": "Todo-Message",
-            "source": {
-                "type": "object",
-                "title": "message",
-                "properties": {
-                    "success": {
-                        "type": "boolean"
-                    },
-                    "message": {
-                        "type": "string"
-                    }
-                }
-            }
-        },
-        {
-            "name": "Todo-Collection",
-            "source": {
-                "id": "http:\/\/acme.com\/schema",
-                "type": "object",
-                "title": "collection",
-                "properties": {
-                    "totalCount": {
-                        "type": "integer"
-                    },
-                    "entry": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "schema:\/\/\/Todo"
-                        }
-                    }
-                }
-            }
         }
     ],
     "action": [
         {
-            "name": "Todo-Custom",
-            "class": "Fusio\\Adapter\\Sample\\Action\\TodoFetchAllCustom",
-            "config": {
-                "connection": "${connection}"
-            }
-        },
-        {
-            "name": "Todo-SQL-Table",
-            "class": "Fusio\\Adapter\\Sql\\Action\\SqlTable",
-            "config": {
-                "connection": "${connection}",
-                "table": "app_todo"
-            }
-        },
-        {
             "name": "Todo-Delete",
             "class": "Fusio\\Adapter\\V8\\Action\\V8Processor",
             "config": {
-                "code": "var connection = connector.get('${connection}');\n\nvar sql = 'UPDATE app_todo SET status = 0 WHERE id = :id';\nconnection.executeUpdate(sql, {\n\tid: request.getUriFragment('todo_id')\n});\n\nresponse.setBody({\n\tsuccess: true\n});\n"
+                "code": "\nvar connection = connector.get(\"sqlite\");\n\nconnection.executeUpdate(\"UPDATE app_todo SET status = 0 WHERE id = :id\", {\n    id: request.getUriFragment(\"todo_id\")\n});\n\nresponse.setBody({\n    success: true,\n    message: \"Delete successful\"\n});\n\n"
             }
         },
         {
             "name": "Todo-Row",
             "class": "Fusio\\Adapter\\V8\\Action\\V8Processor",
             "config": {
-                "code": "var connection = connector.get('${connection}');\n\nvar sql = 'SELECT id, status, title, insertDate FROM app_todo WHERE id = :id';\nvar row = connection.fetchAssoc(sql, {\n\tid: request.getUriFragment('todo_id')\n});\n\nif (row) {\n\tresponse.setBody(row);\n} else {\n\tresponse.setStatusCode(404);\n\tresponse.setBody({\n\t\tsuccess: false, \n\t\tmessage: 'Entry not available'\n\t});\n}\n"
+                "code": "\nvar connection = connector.get(\"sqlite\");\n\nvar row = connection.fetchAssoc(\"SELECT * FROM app_todo WHERE id = :id\", {\n    id: request.getUriFragment(\"todo_id\")\n});\n\nif (row) {\n    response.setBody(row);\n} else {\n    response.setBody({\n        success: false,\n        message: \"Entry not available\"\n    });\n}\n\n"
             }
         },
         {
-            "name": "Todo-Update",
+            "name": "Todo-Insert",
             "class": "Fusio\\Adapter\\V8\\Action\\V8Processor",
             "config": {
-                "code": "var connection = connector.get('${connection}');\n\nvar sql = 'UPDATE app_todo SET status = :status, title = :title WHERE id = :id';\nvar body = request.getBody();\nvar row = connection.executeUpdate(sql, {\n\tstatus: body.status,\n\ttitle: body.title,\n\tid: request.getUriFragment('todo_id')\n});\n\nresponse.setBody({\n\tsuccess: true\n});\n"
+                "code": "\nvar connection = connector.get(\"sqlite\");\nvar body = request.getBody();\n\nconnection.executeUpdate(\"INSERT INTO app_todo (status, title, insertDate) VALUES (1, :title, datetime())\", {\n    title: body.title\n});\n\nresponse.setStatusCode(201);\nresponse.setBody({\n    success: true,\n    message: 'Insert todo successful'\n});\n\n"
+            }
+        },
+        {
+            "name": "Todo-List",
+            "class": "Fusio\\Adapter\\V8\\Action\\V8Processor",
+            "config": {
+                "code": "\nvar connection = connector.get(\"sqlite\");\n\nvar count = parseInt(connection.fetchColumn(\"SELECT COUNT(*) FROM app_todo\"));\nvar result = connection.fetchAll(\"SELECT * FROM app_todo WHERE status = 1 ORDER BY insertDate DESC LIMIT 16\");\n\nresponse.setBody({\n    totalResults: count,\n    entry: result\n});\n\n"
+            }
+        },
+        {
+            "name": "Welcome",
+            "class": "Fusio\\Adapter\\Util\\Action\\UtilStaticResponse",
+            "config": {
+                "response": "{\n    \"message\": \"Congratulations the installation of Fusio was successful\",\n    \"links\": [\n        {\n            \"rel\": \"about\",\n            \"name\": \"http:\\\/\\\/fusio-project.org\"\n        }\n    ]\n}"
             }
         }
     ],
     "routes": [
         {
-            "path": "\/todo",
+            "status": 1,
+            "path": "\/todo\/:todo_id",
+            "controller": "Fusio\\Impl\\Controller\\SchemaApiController",
             "config": [
                 {
-                    "status": 4,
                     "version": 1,
+                    "status": 4,
                     "methods": {
                         "GET": {
                             "active": true,
                             "public": true,
-                            "action": "Todo-SQL-Table",
-                            "response": "Todo-Collection"
-                        },
-                        "POST": {
-                            "active": true,
-                            "action": "Todo-SQL-Table",
-                            "request": "Todo",
-                            "response": "Passthru"
-                        },
-                        "PUT": {
-                            "active": false
+                            "response": "Todo",
+                            "action": "Todo-Row"
                         },
                         "DELETE": {
-                            "active": false
+                            "active": true,
+                            "public": false,
+                            "request": "Passthru",
+                            "response": "Todo-Message",
+                            "action": "Todo-Delete"
                         }
                     }
                 }
             ]
         },
         {
-            "path": "\/todo\/:todo_id",
+            "status": 1,
+            "path": "\/todo",
+            "controller": "Fusio\\Impl\\Controller\\SchemaApiController",
             "config": [
                 {
-                    "status": 4,
                     "version": 1,
+                    "status": 4,
                     "methods": {
                         "GET": {
                             "active": true,
                             "public": true,
-                            "action": "Todo-Row",
-                            "response": "Todo"
+                            "response": "Todo-Collection",
+                            "action": "Todo-List"
                         },
                         "POST": {
-                            "active": false
-                        },
-                        "PUT": {
                             "active": true,
-                            "action": "Todo-Update",
+                            "public": false,
                             "request": "Todo",
-                            "response": "Todo-Message"
-                        },
-                        "DELETE": {
+                            "response": "Todo-Message",
+                            "action": "Todo-Insert"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "status": 1,
+            "path": "\/",
+            "controller": "Fusio\\Impl\\Controller\\SchemaApiController",
+            "config": [
+                {
+                    "version": 1,
+                    "status": 4,
+                    "methods": {
+                        "GET": {
                             "active": true,
-                            "action": "Todo-Delete",
-                            "response": "Todo-Message"
+                            "public": true,
+                            "response": "Passthru",
+                            "action": "Welcome"
                         }
                     }
                 }
