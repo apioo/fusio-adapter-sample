@@ -3,7 +3,7 @@
  * Fusio
  * A web-application to create dynamically RESTful APIs
  *
- * Copyright (C) 2015-2017 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright (C) 2015-2018 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -25,8 +25,8 @@ use Fusio\Adapter\Sample\Action\TodoFetchAllCustom;
 use Fusio\Adapter\Sample\Tests\DbTestCase;
 use Fusio\Engine\Form\Builder;
 use Fusio\Engine\Form\Container;
-use Fusio\Engine\ResponseInterface;
 use PSX\Data\Record\Transformer;
+use PSX\Http\Environment\HttpResponseInterface;
 
 /**
  * TodoFetchAllCustomTest
@@ -68,7 +68,7 @@ class TodoFetchAllCustomTest extends DbTestCase
 JSON;
 
 
-        $this->assertInstanceOf(ResponseInterface::class, $response);
+        $this->assertInstanceOf(HttpResponseInterface::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals([], $response->getHeaders());
         $this->assertJsonStringEqualsJsonString($expect, $body, $body);

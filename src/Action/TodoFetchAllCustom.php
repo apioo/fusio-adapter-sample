@@ -3,7 +3,7 @@
  * Fusio
  * A web-application to create dynamically RESTful APIs
  *
- * Copyright (C) 2015-2017 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright (C) 2015-2018 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -23,7 +23,6 @@ namespace Fusio\Adapter\Sample\Action;
 
 use Doctrine\DBAL\Connection;
 use Fusio\Engine\ActionAbstract;
-use Fusio\Engine\ActionInterface;
 use Fusio\Engine\ContextInterface;
 use Fusio\Engine\Form\BuilderInterface;
 use Fusio\Engine\Form\ElementFactoryInterface;
